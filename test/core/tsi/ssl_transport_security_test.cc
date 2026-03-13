@@ -868,6 +868,34 @@ TEST_P(SslTransportSecurityTest,
   DoHandshake();
 }
 
+TEST_P(SslTransportSecurityTest,
+       DoHandshakeWithTrailingDotServerNameIndicationExactDomain) {
+  LOG(INFO) << "ssl_tsi_test_do_handshake_with_trailing_dot_server_name_"
+               "indication_exact_domain";
+  SetUpSslFixture(/*tls_version=*/std::get<0>(GetParam()),
+                  /*send_client_ca_list=*/std::get<1>(GetParam()));
+  // Per RFC 6066, SNI must not contain a trailing dot. The trailing dot (FQDN
+  // notation) should be stripped before setting the SNI extension. server1 cert
+  // contains "waterzooi.test.google.be" in SAN, so this should match after
+  // stripping the trailing dot.
+  ssl_fixture_->SetServerNameIndication(
+      const_cast<char*>("waterzooi.test.google.be."));
+  DoHandshake();
+}
+
+TEST_P(SslTransportSecurityTest,
+       DoHandshakeWithTrailingDotServerNameIndicationWildStarDomain) {
+  LOG(INFO) << "ssl_tsi_test_do_handshake_with_trailing_dot_server_name_"
+               "indication_wild_star_domain";
+  SetUpSslFixture(/*tls_version=*/std::get<0>(GetParam()),
+                  /*send_client_ca_list=*/std::get<1>(GetParam()));
+  // server1 cert contains "*.test.google.fr" in SAN. A trailing dot on the
+  // SNI hostname should be stripped per RFC 6066 before the handshake.
+  ssl_fixture_->SetServerNameIndication(
+      const_cast<char*>("juju.test.google.fr."));
+  DoHandshake();
+}
+
 TEST_P(SslTransportSecurityTest, DoHandshakeWithBadServerCert) {
   LOG(INFO) << "ssl_tsi_test_do_handshake_with_bad_server_cert";
   SetUpSslFixture(/*tls_version=*/std::get<0>(GetParam()),
