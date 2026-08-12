@@ -137,8 +137,7 @@ TlsCredentials::GetOrCreateCachedClientHandshakerFactory(
                 tsi_ssl_client_handshaker_factory_ref(cached_factory_)};
       }
     }
-    if (CacheMatchesLocked(root_cert_info, identity_certs,
-                           ssl_session_cache)) {
+    if (CacheMatchesLocked(root_cert_info, identity_certs, ssl_session_cache)) {
       GRPC_DCHECK_EQ(cached_key_logger_, key_logger);
       return {GRPC_SECURITY_OK,
               tsi_ssl_client_handshaker_factory_ref(cached_factory_)};
@@ -154,8 +153,7 @@ TlsCredentials::GetOrCreateCachedClientHandshakerFactory(
   }
   tsi_ssl_client_handshaker_factory* new_factory = nullptr;
   grpc_security_status status = grpc_ssl_tsi_client_handshaker_factory_init(
-      pem_key_cert_pair, root_cert_info,
-      !options_->verify_server_cert(),
+      pem_key_cert_pair, root_cert_info, !options_->verify_server_cert(),
       grpc_get_tsi_tls_version(options_->min_tls_version()),
       grpc_get_tsi_tls_version(options_->max_tls_version()), ssl_session_cache,
       key_logger, options_->crl_directory().c_str(), options_->crl_provider(),
